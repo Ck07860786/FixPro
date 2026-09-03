@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const userSchema = new mongoose.schema({
+const userSchema = new mongoose.Schema({
     name:{
         type:String,
         required:[true,'Name is Required'],
@@ -22,7 +22,21 @@ const userSchema = new mongoose.schema({
     },
     password:{
         type:String,
-        required:true,
+        required:[true,'Password is required']
+    },
+    role:{
+        type:String,
+        enum: ["SUPER_ADMIN", "ADMIN", "TECHNICIAN", "CUSTOMER"],
+        default:"CUSTOMER",
+
+    },
+    refreshToken: {
+      type: String,
+      select: false,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
     },
     createdAt:{
         type:Date,
