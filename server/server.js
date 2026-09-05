@@ -3,6 +3,7 @@ import express from "express";
 import connectDB from "./config/db.js";
 import authRoutes from "./routes/authRoutes.js"
 import serviceRoutes from "./routes/serviceRoutes.js"
+import cors from 'cors'
 
 dotenv.config();
 
@@ -16,6 +17,8 @@ const PORT =process.env.PORT || 8000;
 
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 app.get("/", (req, res) => {
   res.send("Hello from Node.js Server!");
