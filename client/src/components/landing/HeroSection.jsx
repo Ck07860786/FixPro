@@ -46,9 +46,9 @@ export function HeroSection() {
               </Link>
             )
           ) : (
-            <Button className="rounded-xl border-0 bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:shadow-xl hover:shadow-blue-500/40">
-              Start Free →
-            </Button>
+            <Link to='/signup' className="rounded-xl border-0 bg-gradient-to-r from-blue-600 to-blue-500 px-4 py-4 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:shadow-xl hover:shadow-blue-500/40">
+              Start For Free →
+            </Link>
           )}
           <Link
             to="/services"

@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import { logout } from '@/features/auth/authSlice'
 
 const navItems = [
-  { label: 'Services', href: '#services' },
+  { label: 'Services', href: '/services' },
   { label: 'How It Works', href: '#how-it-works' },
   { label: 'About', href: '#about' },
   { label: 'Contact', href: '#contact' },
@@ -48,21 +48,21 @@ export function Header() {
       <div className="flex items-center gap-3">
         {isAuthenticated ? (
           <>
-          <Link
-            to={dashboardPath}
-            className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:brightness-110"
-          >
-            {user?.name}
-          </Link>
-          <Button
-            onClick={() => dispatch(logout())}
-            variant="outline"
-            className="h-10 gap-2 border-red-200 bg-white px-4 text-sm font-semibold text-red-600 shadow-sm hover:border-red-300 hover:bg-red-50 hover:text-red-700"
-            title="Log out"
-          >
-            <LogOut aria-hidden="true" />
-            Logout
-          </Button>
+            <Link
+              to={dashboardPath}
+              className="rounded-xl bg-gradient-to-r from-blue-600 to-blue-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition hover:brightness-110"
+            >
+              {user?.name}
+            </Link>
+            <Button
+              onClick={() => dispatch(logout())}
+              variant="outline"
+              className="h-10 gap-2 border-red-200 bg-white px-4 text-sm font-semibold text-red-600 shadow-sm hover:border-red-300 hover:bg-red-50 hover:text-red-700"
+              title="Log out"
+            >
+              <LogOut aria-hidden="true" />
+              Logout
+            </Button>
           </>
         ) : (
           <>
