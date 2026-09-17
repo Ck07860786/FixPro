@@ -4,7 +4,12 @@ import { Link } from 'react-router-dom'
 import { Button } from '../ui/button'
 import { logout } from '@/features/auth/authSlice'
 
-const navItems = ['Services', 'How It Works', 'About', 'Contact']
+const navItems = [
+  { label: 'Services', href: '#services' },
+  { label: 'How It Works', href: '#how-it-works' },
+  { label: 'About', href: '#about' },
+  { label: 'Contact', href: '#contact' },
+]
 
 export function Header() {
   const { isAuthenticated, user } = useSelector((state) => state.auth)
@@ -31,11 +36,11 @@ export function Header() {
       <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
         {navItems.map((item) => (
           <a
-            key={item}
-            href="#"
+            key={item.label}
+            href={item.href}
             className="transition hover:text-slate-900"
           >
-            {item}
+            {item.label}
           </a>
         ))}
       </nav>

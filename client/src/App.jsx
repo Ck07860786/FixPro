@@ -20,12 +20,14 @@ const ServiceRequests = lazy(() => import('./pages/dashboard/admin/ServiceReques
 const Services = lazy(() => import('./pages/dashboard/admin/Services'))
 const Technicians = lazy(() => import('./pages/dashboard/admin/Technicians'))
 const TechnicianDashboard = lazy(() => import('./pages/dashboard/technician/TechnicianDashboard'))
+const ExploreServices = lazy(() => import('./pages/ExploreServices'))
 
 function App() {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/services" element={<ExploreServices />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/business-signup" element={<BusinessSignup />} />
         <Route path="/pending-approval" element={<PendingApproval />} />

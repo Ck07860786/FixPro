@@ -58,3 +58,25 @@ export const deleteService = async (id) => {
     );
   }
 };
+
+export const getPublicServices = async (params = {}) => {
+  try {
+    const response = await api.get("/services/public", { params });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to get services"
+    );
+  }
+};
+
+export const getServiceCategories = async () => {
+  try {
+    const response = await api.get("/services/public/categories");
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to get categories"
+    );
+  }
+};

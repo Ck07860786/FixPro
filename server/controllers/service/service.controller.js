@@ -14,7 +14,7 @@ const deleteImageFile = (urlPath) => {
     const filePath = path.join(__dirname, "..", "..", urlPath);
     if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
   } catch {
-    
+
   }
 };
 export const createService = async (req, res) => {
@@ -73,13 +73,27 @@ export const getBusinessServices = async (req, res) => {
   try {
     const businessId = req.user.businessId;
 
+    if (!businessId) {
+      const services = await Service.find({ isActive: true }).sort({ createdAt: -1 });
+      const categories = await Service.distinct("category", { isActive: true });
+      return res.status(200).json({
+        success: true,
+        count: services.length,
+        categories,
+        services,
+      });
+    }
+
     const services = await Service.find({
       businessId,
     }).sort({ createdAt: -1 });
 
+    const categories = await Service.distinct("category", { businessId });
+
     return res.status(200).json({
       success: true,
       count: services.length,
+      categories,
       services,
     });
   } catch (error) {
@@ -141,8 +155,8 @@ export const updateService = async (req, res) => {
           typeof req.body.existingImages === "string"
             ? JSON.parse(req.body.existingImages)
             : Array.isArray(req.body.existingImages)
-            ? req.body.existingImages
-            : [req.body.existingImages];
+              ? req.body.existingImages
+              : [req.body.existingImages];
       } catch {
         keepImages = [];
       }
@@ -215,3 +229,96 @@ export const deleteService = async (req, res) => {
     });
   }
 };
+
+export const getAllPublicServices = async (req, res) => {
+  try {
+    const { category, search, sort } = req.query;
+
+    const query = { isActive: true };
+
+    if (category && category.toLowerCase() !== "all") {
+      query.category = { $regex: new RegExp(`^${category.trim()}$`, "i") };
+    }
+
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), "i");
+      query.$or = [
+        { name: searchRegex },
+        { description: searchRegex },
+        { category: searchRegex },
+      ];
+    }
+
+    let sortOption = { createdAt: -1 };
+    if (sort === "price_asc") sortOption = { price: 1 };
+    if (sort === "price_desc") sortOption = { price: -1 };
+    if (sort === "duration_asc") sortOption = { estimatedDuration: 1 };
+
+    const services = await Service.find(query)
+      .populate("businessId", "name email phone address logo")
+      .sort(sortOption);
+
+    const categories = await Service.distinct("category", { isActive: true });
+
+    return res.status(200).json({
+      success: true,
+      count: services.length,
+      categories,
+      services,
+    });
+  } catch (error) {
+    console.error("Get all public services error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const getPublicServiceById = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const service = await Service.findOne({
+      _id: id,
+      isActive: true,
+    }).populate("businessId", "name email phone address logo");
+
+    if (!service) {
+      return res.status(404).json({
+        success: false,
+        message: "Service not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      service,
+    });
+  } catch (error) {
+    console.error("Get public service error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
+export const getServiceCategories = async (_req, res) => {
+  try {
+    const categories = await Service.distinct("category", { isActive: true });
+
+    return res.status(200).json({
+      success: true,
+      count: categories.length,
+      categories,
+    });
+  } catch (error) {
+    console.error("Get service categories error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
