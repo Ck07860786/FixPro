@@ -1,7 +1,7 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { InteractiveGridPattern } from "../ui/interactive-grid-pattern"
+import { InteractiveGridPattern } from "@/components/ui/interactive-grid-pattern"
 
 export function HeroBg({ className }) {
   return (

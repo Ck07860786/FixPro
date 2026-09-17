@@ -6,7 +6,7 @@ import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 import {
   login,
   clearAuthError,
-} from "../../../features/auth/authSlice";
+} from "@/features/auth/authSlice";
 
 export default function Login() {
   const dispatch = useDispatch();

@@ -11,7 +11,7 @@ import {
   Check,
 } from "lucide-react";
 
-import { businessSignup, clearAuthError } from "../../../features/auth/authSlice";
+import { businessSignup, clearAuthError } from "@/features/auth/authSlice";
 
 const steps = [
   { label: "Business Details", desc: "Company information" },

@@ -1,12 +1,12 @@
-import { HeroBg } from "../backgrounds/HeroBg";
-import { DashboardPreview } from "../landing/DashboardPreview";
-import { FeaturesSection } from "../landing/FeaturesSection";
+import { HeroBg } from "../components/landing/HeroBg";
+import { DashboardPreview } from "../components/landing/DashboardPreview";
+import { FeaturesSection } from "../components/landing/FeaturesSection";
 
-import { Header } from "../layout/Header";
-import { HeroSection } from "../landing/HeroSection";
-import { ServicesSection } from "../landing/ServicesSection";
-import { WorkflowSection } from "../landing/WorkflowSection";
-import { Footer } from "../layout/Footer";
+import { Header } from "../components/layout/Header";
+import { HeroSection } from "../components/landing/HeroSection";
+import { ServicesSection } from "../components/landing/ServicesSection";
+import { WorkflowSection } from "../components/landing/WorkflowSection";
+import { Footer } from "../components/layout/Footer";
 
 const Home =()=>{
     return(

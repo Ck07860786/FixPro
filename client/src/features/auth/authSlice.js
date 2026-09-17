@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { registerCustomer, registerBusiness, loginUser } from "./authApi";
+import { registerCustomer, registerBusiness, loginUser, changePassword } from "./authApi";
 
 const savedAuth = JSON.parse(
   localStorage.getItem("fixpro-auth")
@@ -7,6 +7,7 @@ const savedAuth = JSON.parse(
 const initialState = savedAuth || {
   user: null,
   business: null,
+  technician: null,
   accessToken: null,
   isAuthenticated: false,
   loading: false,
@@ -49,6 +50,18 @@ export const login = createAsyncThunk(
   }
 );
 
+export const updatePassword = createAsyncThunk(
+  "auth/updatePassword",
+  async (data, { rejectWithValue }) => {
+    try {
+      const response = await changePassword(data);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
 
@@ -58,11 +71,12 @@ const authSlice = createSlice({
     logout: (state) => {
       state.user = null;
       state.business = null;
+      state.technician = null;
       state.accessToken = null;
       state.isAuthenticated = false;
       state.error = null;
-      
-       localStorage.removeItem("fixpro-auth");
+
+      localStorage.removeItem("fixpro-auth");
     },
 
     clearAuthError: (state) => {
@@ -70,9 +84,7 @@ const authSlice = createSlice({
     },
   },
 
-  extraReducers: (builder) => {
-    // CUSTOMER SIGNUP
-    builder
+  extraReducers: (builder) => {    builder
       .addCase(customerSignup.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -86,10 +98,7 @@ const authSlice = createSlice({
       .addCase(customerSignup.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
-
-    // BUSINESS SIGNUP
-    builder
+      });    builder
       .addCase(businessSignup.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -103,10 +112,7 @@ const authSlice = createSlice({
       .addCase(businessSignup.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      });
-
-    // LOGIN
-    builder
+      });    builder
       .addCase(login.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -117,26 +123,39 @@ const authSlice = createSlice({
 
         state.user = action.payload.user;
         state.business = action.payload.business;
+        state.technician = action.payload.technician || null;
         state.accessToken = action.payload.accessToken;
 
         state.isAuthenticated = true;
         state.error = null;
 
         localStorage.setItem(
-    "fixpro-auth",
-    JSON.stringify({
-      user: state.user,
-      business: state.business,
-      accessToken: state.accessToken,
-      isAuthenticated: true,
-    })
-  );
+          "fixpro-auth",
+          JSON.stringify({
+            user: state.user,
+            business: state.business,
+            technician: state.technician,
+            accessToken: state.accessToken,
+            isAuthenticated: true,
+          })
+        );
       })
 
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.isAuthenticated = false;
+      })      .addCase(updatePassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePassword.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(updatePassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

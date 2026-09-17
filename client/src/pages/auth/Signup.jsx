@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { useDispatch, useSelector } from "react-redux";
-import { customerSignup, clearAuthError } from "../../../features/auth/authSlice";
+import { customerSignup, clearAuthError } from "@/features/auth/authSlice";
 
 export default function Signup() {
   const navigate = useNavigate();
