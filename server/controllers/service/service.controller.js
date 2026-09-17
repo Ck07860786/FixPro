@@ -1,8 +1,25 @@
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import Service from "../../models/serviceModel.js";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const getImagePaths = (files) => {
+  if (!files || files.length === 0) return [];
+  return files.map((f) => `/uploads/services/${f.filename}`);
+};
+const deleteImageFile = (urlPath) => {
+  try {
+    const filePath = path.join(__dirname, "..", "..", urlPath);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  } catch {
+    
+  }
+};
 export const createService = async (req, res) => {
   try {
-    const { name, description, category, price, estimatedDuration, images } =
+    const { name, description, category, price, estimatedDuration, isActive } =
       req.body;
 
     const businessId = req.user.businessId;
@@ -25,6 +42,7 @@ export const createService = async (req, res) => {
         message: "This service already exists",
       });
     }
+    const images = getImagePaths(req.files);
 
     const service = await Service.create({
       businessId,
@@ -34,6 +52,7 @@ export const createService = async (req, res) => {
       price,
       estimatedDuration,
       images,
+      isActive: isActive === "false" ? false : true,
     });
 
     return res.status(201).json({
@@ -50,8 +69,6 @@ export const createService = async (req, res) => {
     });
   }
 };
-
-//get all services of logged in business
 export const getBusinessServices = async (req, res) => {
   try {
     const businessId = req.user.businessId;
@@ -74,8 +91,6 @@ export const getBusinessServices = async (req, res) => {
     });
   }
 };
-
-// get single service
 export const getServiceById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -106,33 +121,54 @@ export const getServiceById = async (req, res) => {
     });
   }
 };
-
-//update service
 export const updateService = async (req, res) => {
   try {
     const { id } = req.params;
     const businessId = req.user.businessId;
 
-    const service = await Service.findOneAndUpdate(
-      {
-        _id: id,
-        businessId,
-      },
-      {
-        $set: req.body,
-      },
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+    const existing = await Service.findOne({ _id: id, businessId });
 
-    if (!service) {
+    if (!existing) {
       return res.status(404).json({
         success: false,
         message: "Service not found",
       });
     }
+    let keepImages = [];
+    if (req.body.existingImages) {
+      try {
+        keepImages =
+          typeof req.body.existingImages === "string"
+            ? JSON.parse(req.body.existingImages)
+            : Array.isArray(req.body.existingImages)
+            ? req.body.existingImages
+            : [req.body.existingImages];
+      } catch {
+        keepImages = [];
+      }
+    }
+
+    const newImages = getImagePaths(req.files);
+    const finalImages = [...keepImages, ...newImages];
+    const removedImages = (existing.images || []).filter(
+      (img) => !keepImages.includes(img)
+    );
+    removedImages.forEach(deleteImageFile);
+    const { existingImages, images, isActive, ...rest } = req.body;
+
+    const updateData = {
+      ...rest,
+      images: finalImages,
+    };
+    if (isActive !== undefined) {
+      updateData.isActive = isActive === "false" ? false : true;
+    }
+
+    const service = await Service.findOneAndUpdate(
+      { _id: id, businessId },
+      { $set: updateData },
+      { new: true, runValidators: true }
+    );
 
     return res.status(200).json({
       success: true,
@@ -148,9 +184,6 @@ export const updateService = async (req, res) => {
     });
   }
 };
-
-// delete service
-
 export const deleteService = async (req, res) => {
   try {
     const { id } = req.params;
@@ -167,6 +200,7 @@ export const deleteService = async (req, res) => {
         message: "Service not found",
       });
     }
+    (service.images || []).forEach(deleteImageFile);
 
     return res.status(200).json({
       success: true,
