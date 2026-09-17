@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { comparePassword, hashPassword } from "../../helper/authHelper.js";
 import User from "../../models/userModel.js"
 import Business from "../../models/businessModel.js";
+import Technician from "../../models/technicianModel.js";
 import jwt from "jsonwebtoken"
 
 
@@ -214,6 +215,7 @@ export const loginUser = async(req,res)=>{
     }
 
       let business = null;
+      let technicianProfile = null;
 
        if (user.role === "ADMIN") {
       business = await Business.findOne({
@@ -249,6 +251,26 @@ export const loginUser = async(req,res)=>{
           message: "Your business account has been suspended",
         });
       }
+    }    if (user.role === "TECHNICIAN") {
+      technicianProfile = await Technician.findOne({
+        userId: user._id,
+      });
+
+      if (!technicianProfile) {
+        return res.status(404).json({
+          success: false,
+          message: "Technician profile not found",
+        });
+      }
+
+      if (!technicianProfile.isActive) {
+        return res.status(403).json({
+          success: false,
+          message: "Your technician account has been deactivated",
+        });
+      }      business = await Business.findById(
+        technicianProfile.businessId
+      );
     }
 
        const payload = {
@@ -285,6 +307,19 @@ export const loginUser = async(req,res)=>{
             status: business.status,
           }
         : null,
+
+      technician: technicianProfile
+        ? {
+            id: technicianProfile._id,
+            specialization: technicianProfile.specialization,
+            availabilityStatus: technicianProfile.availabilityStatus,
+            experienceYears: technicianProfile.experienceYears,
+            skills: technicianProfile.skills,
+            employmentType: technicianProfile.employmentType,
+            address: technicianProfile.address,
+            joiningDate: technicianProfile.joiningDate,
+          }
+        : null,
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -295,3 +330,57 @@ export const loginUser = async(req,res)=>{
     });
   }
 }
+
+export const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Current password and new password are required",
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters",
+      });
+    }
+
+    const user = await User.findById(req.user.userId).select("+password");
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    const isMatch = await comparePassword(currentPassword, user.password);
+
+    if (!isMatch) {
+      return res.status(401).json({
+        success: false,
+        message: "Current password is incorrect",
+      });
+    }
+
+    const hashedNewPassword = await hashPassword(newPassword);
+    user.password = hashedNewPassword;
+    await user.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully",
+    });
+  } catch (error) {
+    console.error("Change password error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
