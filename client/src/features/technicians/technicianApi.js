@@ -54,3 +54,16 @@ export const deleteTechnician = async (id) => {
     );
   }
 };
+
+export const updateTechnicianStatusApi = async (status, id = null) => {
+  try {
+    const url = id ? `/technicians/${id}/status` : "/technicians/status";
+    const response = await api.put(url, { status });
+    return response.data;
+  } catch (error) {
+    throw new Error(
+      error.response?.data?.message || "Failed to update technician status"
+    );
+  }
+};
+

@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { registerCustomer, registerBusiness, loginUser, changePassword } from "./authApi";
+import { updateTechnicianStatusApi } from "@/features/technicians/technicianApi";
 
 const savedAuth = JSON.parse(
   localStorage.getItem("fixpro-auth")
@@ -62,6 +63,18 @@ export const updatePassword = createAsyncThunk(
   }
 );
 
+export const updateTechnicianAvailability = createAsyncThunk(
+  "auth/updateTechnicianAvailability",
+  async (status, { rejectWithValue }) => {
+    try {
+      const response = await updateTechnicianStatusApi(status);
+      return { status, technician: response.technician };
+    } catch (error) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
 
@@ -81,6 +94,17 @@ const authSlice = createSlice({
 
     clearAuthError: (state) => {
       state.error = null;
+    },
+
+    setTechnicianAvailabilityStatus: (state, action) => {
+      if (state.technician) {
+        state.technician.availabilityStatus = action.payload;
+        const saved = JSON.parse(localStorage.getItem("fixpro-auth") || "{}");
+        if (saved.technician) {
+          saved.technician.availabilityStatus = action.payload;
+          localStorage.setItem("fixpro-auth", JSON.stringify(saved));
+        }
+      }
     },
   },
 
@@ -156,10 +180,20 @@ const authSlice = createSlice({
       .addCase(updatePassword.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(updateTechnicianAvailability.fulfilled, (state, action) => {
+        if (state.technician) {
+          state.technician.availabilityStatus = action.payload.status;
+          const saved = JSON.parse(localStorage.getItem("fixpro-auth") || "{}");
+          if (saved.technician) {
+            saved.technician.availabilityStatus = action.payload.status;
+            localStorage.setItem("fixpro-auth", JSON.stringify(saved));
+          }
+        }
       });
   },
 });
 
-export const { logout, clearAuthError } = authSlice.actions;
+export const { logout, clearAuthError, setTechnicianAvailabilityStatus } = authSlice.actions;
 
 export default authSlice.reducer;

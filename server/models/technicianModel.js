@@ -66,7 +66,9 @@ const technicianSchema = new mongoose.Schema(
       type: String,
       enum: [
         "AVAILABLE",
+        "ONLINE",
         "BUSY",
+        "ON_SITE",
         "OFFLINE",
       ],
       default: "AVAILABLE",

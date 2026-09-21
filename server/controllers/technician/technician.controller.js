@@ -155,6 +155,7 @@ export const getTechnicians = async (req, res) => {
     const result = technicians.map((tech) => ({
       _id: tech._id,
       userId: tech.userId?._id,
+      user: tech.userId,
       name: tech.userId?.name,
       email: tech.userId?.email,
       phone: tech.userId?.phone,
@@ -363,3 +364,77 @@ export const deleteTechnician = async (req, res) => {
     });
   }
 };
+
+export const updateTechnicianStatus = async (req, res) => {
+  try {
+    const { status, availabilityStatus } = req.body;
+    const newStatus = status || availabilityStatus;
+    const validStatuses = ["AVAILABLE", "ONLINE", "BUSY", "ON_SITE", "OFFLINE"];
+
+    if (!newStatus || !validStatuses.includes(newStatus)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status. Must be one of: AVAILABLE, ONLINE, BUSY, ON_SITE, OFFLINE",
+      });
+    }
+
+    let tech;
+    if (req.user.role === "TECHNICIAN") {
+      tech = await Technician.findOne({ userId: req.user.userId });
+    } else {
+      const techId = req.params.id || req.body.technicianId;
+      if (!techId) {
+        return res.status(400).json({
+          success: false,
+          message: "Technician ID is required",
+        });
+      }
+      tech = await Technician.findOne({
+        _id: techId,
+        businessId: req.user.businessId,
+      });
+    }
+
+    if (!tech) {
+      return res.status(404).json({
+        success: false,
+        message: "Technician profile not found",
+      });
+    }
+
+    tech.availabilityStatus = newStatus;
+    await tech.save();
+
+    const populatedTech = await Technician.findById(tech._id).populate(
+      "userId",
+      "name email phone isActive"
+    );
+
+    return res.status(200).json({
+      success: true,
+      message: `Status updated to ${newStatus}`,
+      technician: {
+        _id: populatedTech._id,
+        userId: populatedTech.userId?._id,
+        user: populatedTech.userId,
+        name: populatedTech.userId?.name,
+        email: populatedTech.userId?.email,
+        phone: populatedTech.userId?.phone,
+        specialization: populatedTech.specialization,
+        availabilityStatus: populatedTech.availabilityStatus,
+        experienceYears: populatedTech.experienceYears,
+        skills: populatedTech.skills,
+        employmentType: populatedTech.employmentType,
+        address: populatedTech.address,
+      },
+      status: populatedTech.availabilityStatus,
+    });
+  } catch (error) {
+    console.error("Update technician status error:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
