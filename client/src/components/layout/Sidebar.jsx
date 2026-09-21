@@ -27,7 +27,6 @@ const adminNav = [
   { label: "Technicians", icon: Wrench, to: "/business/technicians" },
   { label: "Customers", icon: Users, to: "/business/customers" },
   { label: "Services", icon: Toolbox, to: "/business/services" },
-  { label: "Analytics", icon: BarChart3, to: "/business/analytics" },
   { label: "Settings", icon: Settings, to: "/business/settings" },
 ];
 
