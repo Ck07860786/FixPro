@@ -24,14 +24,14 @@ export function Header() {
 
   return (
     <header className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5 lg:px-10">
-      <div className="flex items-center gap-2">
+      <Link to='/' className="flex items-center gap-2">
         <span className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-slate-900 to-blue-600 text-[10px] font-bold text-white shadow-md shadow-blue-500/20">
           ✦
         </span>
         <span className="text-xl font-bold tracking-[-0.04em] text-slate-900">
           FixPro
         </span>
-      </div>
+      </Link>
 
       <nav className="hidden items-center gap-8 text-sm font-medium text-slate-600 md:flex">
         {navItems.map((item) => (

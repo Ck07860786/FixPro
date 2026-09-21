@@ -35,7 +35,7 @@ export default function ServiceDetailModal({ service, onClose }) {
     ? "/business/services"
     : user?.role === "TECHNICIAN"
     ? "/technician/dashboard"
-    : "/customer/dashboard";
+    : `/customer/book-service?serviceId=${service._id}&businessId=${service.businessId?._id || service.businessId || ""}`;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200">

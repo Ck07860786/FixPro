@@ -21,6 +21,8 @@ const Services = lazy(() => import('./pages/dashboard/admin/Services'))
 const Technicians = lazy(() => import('./pages/dashboard/admin/Technicians'))
 const TechnicianDashboard = lazy(() => import('./pages/dashboard/technician/TechnicianDashboard'))
 const ExploreServices = lazy(() => import('./pages/ExploreServices'))
+const BookService = lazy(() => import('./pages/dashboard/customer/BookService'))
+const MyRequests = lazy(() => import('./pages/dashboard/customer/MyRequests'))
 
 function App() {
   return (
@@ -55,6 +57,8 @@ function App() {
           }
         >
           <Route path="dashboard" element={<CustomerDashboard />} />
+          <Route path="book-service" element={<BookService />} />
+          <Route path="requests" element={<MyRequests />} />
         </Route>
         <Route
           path="/technician"

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Header } from "@/components/layout/Header";
@@ -180,17 +180,17 @@ export default function ExploreServices() {
     setSearchParams({});
   };
 
-  const bookingTarget = useMemo(() => {
+  const getBookingTarget = (service) => {
     if (!isAuthenticated) return "/login";
     if (user?.role === "ADMIN") return "/business/services";
     if (user?.role === "TECHNICIAN") return "/technician/dashboard";
-    return "/customer/dashboard";
-  }, [isAuthenticated, user]);
+    return `/customer/book-service?serviceId=${service._id}&businessId=${service.businessId?._id || service.businessId || ""}`;
+  };
 
   return (
     <>
       <Header />
-      <div className="min-h-screen bg-[#f3f6f9] text-slate-900 flex flex-col justify-between">
+      <div className="min-h-screen text-slate-900 flex flex-col justify-between">
 
         <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-10 flex-1 w-full">
           <ServicesHeroBanner
@@ -221,13 +221,12 @@ export default function ExploreServices() {
                   key={service._id}
                   service={service}
                   onQuickView={setSelectedService}
-                  bookingTarget={bookingTarget}
+                  bookingTarget={getBookingTarget(service)}
                 />
               ))}
             </div>
           )}
         </main>
-
 
         <ServiceDetailModal
           service={selectedService}
