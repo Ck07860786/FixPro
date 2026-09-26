@@ -7,6 +7,7 @@ import authRoutes from "./routes/authRoutes.js"
 import serviceRoutes from "./routes/serviceRoutes.js"
 import technicianRoutes from "./routes/technicianRoutes.js"
 import serviceRequestRoutes from "./routes/serviceRequestRoutes.js"
+import superAdminRoutes from "./routes/superAdminRoutes.js"
 import cors from 'cors'
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,6 +34,7 @@ app.use('/api/auth',authRoutes)
 app.use('/api/services',serviceRoutes)
 app.use('/api/technicians',technicianRoutes)
 app.use('/api/service-requests',serviceRequestRoutes)
+app.use('/api/super-admin',superAdminRoutes)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port:${PORT}`);
