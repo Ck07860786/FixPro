@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import AdminDashboard from "./admin/AdminDashboard";
 import CustomerDashboard from "./customer/CustomerDashboard";
 import TechnicianDashboard from "./technician/TechnicianDashboard";
+import SuperAdminDashboard from "./superAdmin/superAdminDashboard";
 
 export default function Dashboard() {
   const { user } = useSelector((state) => state.auth);
@@ -12,6 +13,10 @@ export default function Dashboard() {
 
   if (user?.role === "TECHNICIAN") {
     return <TechnicianDashboard />;
+  }
+
+  if (user?.role === "SUPER_ADMIN") {
+    return <SuperAdminDashboard />;
   }
 
   return <AdminDashboard />;

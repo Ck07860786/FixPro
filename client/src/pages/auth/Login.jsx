@@ -48,7 +48,7 @@ export default function Login() {
       const role = result.user.role;
 
       if (role === "SUPER_ADMIN") {
-        navigate("/admin/dashboard");
+        navigate("/super-admin/dashboard");
       } else if (role === "ADMIN") {
         navigate("/business/dashboard");
       } else if (role === "TECHNICIAN") {

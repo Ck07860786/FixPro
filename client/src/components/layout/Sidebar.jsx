@@ -47,24 +47,35 @@ const technicianNav = [
 
 ];
 
+const superAdminNav = [
+  { label: "Dashboard", icon: LayoutDashboard, to: "/super-admin/dashboard" },
+  { label: "Manage Businesses", icon: ShieldCheck, to: "/super-admin/business-requests" },
+  { label: "Settings", icon: Settings, to: "/super-admin/settings" },
+];
+
 export default function Sidebar({ role }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const isAdmin = role === "ADMIN" || role === "SUPER_ADMIN";
+  const isSuperAdmin = role === "SUPER_ADMIN";
+  const isAdmin = role === "ADMIN";
   const isTechnician = role === "TECHNICIAN";
 
-  const navItems = isAdmin
-    ? adminNav
-    : isTechnician
-      ? technicianNav
-      : customerNav;
+  const navItems = isSuperAdmin
+    ? superAdminNav
+    : isAdmin
+      ? adminNav
+      : isTechnician
+        ? technicianNav
+        : customerNav;
 
-  const subtitle = isAdmin
-    ? "Admin Console"
-    : isTechnician
-      ? "Technician Portal"
-      : "Customer Portal";
+  const subtitle = isSuperAdmin
+    ? "Super Admin"
+    : isAdmin
+      ? "Admin Console"
+      : isTechnician
+        ? "Technician Portal"
+        : "Customer Portal";
 
   const handleLogout = () => {
     dispatch(logout());
@@ -82,7 +93,7 @@ export default function Sidebar({ role }) {
           <div className="text-[10px] text-slate-400">{subtitle}</div>
         </div>
       </div>
-      {isAdmin && (
+      {(isAdmin || isSuperAdmin) && (
         <div className="px-4 pb-4">
           <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700">
             <Plus className="h-3.5 w-3.5" />
