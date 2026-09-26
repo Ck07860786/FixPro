@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import AdminDashboard from "./admin/AdminDashboard";
 import CustomerDashboard from "./customer/CustomerDashboard";
 import TechnicianDashboard from "./technician/TechnicianDashboard";
-import SuperAdminDashboard from "./superAdmin/superAdminDashboard";
+import SuperAdminDashboard from "./superAdmin/SuperAdminDashboard";
 
 export default function Dashboard() {
   const { user } = useSelector((state) => state.auth);

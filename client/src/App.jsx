@@ -14,8 +14,9 @@ import Setting from './pages/dashboard/technician/Setting'
 import Profile from './pages/dashboard/technician/Profile'
 import MyJobs from './pages/dashboard/technician/MyJobs'
 import Schedule from './pages/dashboard/technician/Schedule'
-import SuperAdminDashboard from './pages/dashboard/superAdmin/superAdminDashboard'
+
 import BusinessRequests from './pages/dashboard/superAdmin/BusinessRequests'
+import SuperAdminDashboard from './pages/dashboard/superAdmin/SuperAdminDashboard'
 const AdminDashboard = lazy(() => import('./pages/dashboard/admin/AdminDashboard'))
 const CustomerDashboard = lazy(() => import('./pages/dashboard/customer/CustomerDashboard'))
 const ServiceRequests = lazy(() => import('./pages/dashboard/admin/ServiceRequests'))
